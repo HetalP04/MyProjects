@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tic-Tac-Toe</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <style>
+    table.board {
+      border-collapse: collapse;
+      margin-bottom: 10px;
+    }
+    td {
+      padding: 0;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      font-size: 2em;
+      display: block;
+    }
+    .reset {
+      margin-top: 10px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <table class="board">
+      <tr v-for="(row, i) in board" :key="'row-' + i">
+        <td v-for="(cell, j) in row" :key="i + '-' + j">
+          <button
+            :class="'cell cell-' + i + '-' + j"
+            class="cell"
+            @click="playerMove(i, j)"
+            :disabled="cell !== ''"
+          >
+            {{ cell }}
+          </button>
+        </td>
+      </tr>
+    </table>
+    <button class="reset" @click="resetGame">Reset</button>
+  </div>
+
+  <script src="tictactoe.js"></script>
+</body>
+</html>
+

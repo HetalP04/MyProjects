@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Animal - WebGL (Full Points)</title>
+  <style>
+    canvas { border: 1px solid black; }
+    .controls { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <canvas id="webgl" width="500" height="500"></canvas>
+  <div class="controls">
+    Global Rotation: <input type="range" min="0" max="360" value="0" id="globalRotateSlider">
+    Limb Angle: <input type="range" min="0" max="90" value="0" id="limbAngleSlider">
+    Foot Angle: <input type="range" min="0" max="90" value="0" id="footAngleSlider">
+    <button id="animateBtn">Toggle Animation</button>
+    <div id="fps" style="position:absolute;top:10px;left:10px;color:black;"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+  <script>
+    let canvas = document.getElementById('webgl');
+    let gl = canvas.getContext('webgl');
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clearColor(0.9, 0.9, 0.9, 1.0);
+
+    let VSHADER_SOURCE = `
+      attribute vec4 a_Position;
+      uniform mat4 u_ModelMatrix, u_GlobalRotation, u_ProjectionMatrix, u_ViewMatrix;
+      void main() {
+        gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotation * u_ModelMatrix * a_Position;
+      }
+    `;
+    let FSHADER_SOURCE = `
+      precision mediump float;
+      uniform vec4 u_FragColor;
+      void main() {
+        gl_FragColor = u_FragColor;
+      }
+    `;
+
+    function initShaders(gl, vshader, fshader) {
+      let program = gl.createProgram();
+      let vs = gl.createShader(gl.VERTEX_SHADER);
+      let fs = gl.createShader(gl.FRAGMENT_SHADER);
+      gl.shaderSource(vs, vshader);
+      gl.shaderSource(fs, fshader);
+      gl.compileShader(vs); gl.compileShader(fs);
+      gl.attachShader(program, vs);
+      gl.attachShader(program, fs);
+      gl.linkProgram(program);
+      gl.useProgram(program);
+      gl.program = program;
+      return true;
+    }
+
+    function initVertexBuffers(gl) {
+      let vertices = new Float32Array([
+        -0.5, -0.5,  0.5, 0.5, -0.5,  0.5, 0.5,  0.5,  0.5, -0.5,  0.5,  0.5,
+        -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5,  0.5, -0.5, -0.5,  0.5, -0.5,
+      ]);
+      let indices = new Uint8Array([
+        0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 4, 5, 1, 4, 1, 0,
+        7, 6, 2, 7, 2, 3, 5, 6, 2, 5, 2, 1, 4, 7, 3, 4, 3, 0,
+      ]);
+      let vertexBuffer = gl.createBuffer();
+      let indexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+      let a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+      gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(a_Position);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+      return { count: indices.length, vertexBuffer, indexBuffer };
+    }
+
+    function initCylinderBuffers(gl, segments = 20) {
+      let vertices = [], indices = [];
+      for (let i = 0; i <= segments; i++) {
+        let angle = i * 2 * Math.PI / segments;
+        let x = 0.5 * Math.cos(angle);
+        let z = 0.5 * Math.sin(angle);
+        vertices.push(x, 0.5, z);
+        vertices.push(x, -0.5, z);
+      }
+      for (let i = 0; i < segments; i++) {
+        let top1 = i * 2, bottom1 = i * 2 + 1;
+        let top2 = (i + 1) * 2, bottom2 = (i + 1) * 2 + 1;
+        indices.push(top1, bottom1, top2, top2, bottom1, bottom2);
+      }
+      let vertexBuffer = gl.createBuffer();
+      let indexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+      let a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+      gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(a_Position);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+      return { count: indices.length, vertexBuffer, indexBuffer };
+    }
+
+    function drawCube(gl, n, modelMatrix, globalRotationMatrix, projectionMatrix, viewMatrix, color) {
+      gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix);
+      gl.uniformMatrix4fv(u_GlobalRotation, false, globalRotationMatrix);
+      gl.uniformMatrix4fv(u_ProjectionMatrix, false, projectionMatrix);
+      gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix);
+      gl.uniform4fv(u_FragColor, color);
+      gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+    }
+
+    initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE);
+    let cubeBuffers = initVertexBuffers(gl);
+    let cylinderBuffers = initCylinderBuffers(gl);
+    let u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
+    let u_GlobalRotation = gl.getUniformLocation(gl.program, 'u_GlobalRotation');
+    let u_ProjectionMatrix = gl.getUniformLocation(gl.program, 'u_ProjectionMatrix');
+    let u_ViewMatrix = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
+    let u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
+    let a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+
+    gl.enable(gl.DEPTH_TEST);
+
+    let gAnimalGlobalRotation = 0;
+    let gLimbAngle = 0;
+    let gFootAngle = 0;
+    let isAnimating = false;
+    let g_last = Date.now();
+
+    let projectionMatrix = mat4.create();
+    mat4.perspective(projectionMatrix, 45 * Math.PI / 180, canvas.width / canvas.height, 0.1, 100.0);
+    let viewMatrix = mat4.create();
+    mat4.lookAt(viewMatrix, [0, 0, 6], [0, 0, 0], [0, 1, 0]);
+
+    document.getElementById('globalRotateSlider').oninput = function () {
+      gAnimalGlobalRotation = this.value;
+      renderScene();
+    };
+    document.getElementById('limbAngleSlider').oninput = function () {
+      gLimbAngle = this.value;
+      renderScene();
+    };
+    document.getElementById('footAngleSlider').oninput = function () {
+      gFootAngle = this.value;
+      renderScene();
+    };
+    document.getElementById('animateBtn').onclick = function () {
+      isAnimating = !isAnimating;
+    };
+
+    canvas.addEventListener('click', function(ev) {
+      if (ev.shiftKey) {
+        kick();
+      }
+    });
+
+
+    function renderScene() {
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      let globalRotationMatrix = mat4.create();
+      mat4.rotateY(globalRotationMatrix, globalRotationMatrix, gAnimalGlobalRotation * Math.PI / 180);
+
+      gl.bindBuffer(gl.ARRAY_BUFFER, cylinderBuffers.vertexBuffer);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cylinderBuffers.indexBuffer);
+      gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(a_Position);
+
+      let bodyMatrix = mat4.create();
+      mat4.scale(bodyMatrix, bodyMatrix, [0.8, 1.5, 0.8]);
+      gl.uniformMatrix4fv(u_ModelMatrix, false, bodyMatrix);
+      gl.uniform4fv(u_FragColor, [0.2, 0.6, 1.0, 1.0]);
+      gl.drawElements(gl.TRIANGLES, cylinderBuffers.count, gl.UNSIGNED_SHORT, 0);
+
+      // Head (bobbing)
+      gl.bindBuffer(gl.ARRAY_BUFFER, cubeBuffers.vertexBuffer);
+      gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeBuffers.indexBuffer);
+
+      gl.uniformMatrix4fv(u_GlobalRotation, false, globalRotationMatrix);
+      gl.uniformMatrix4fv(u_ProjectionMatrix, false, projectionMatrix);
+      gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix);
+
+      let headMatrix = mat4.create();
+      let headBob = 0.1 * Math.sin(gLimbAngle * Math.PI / 180);
+      mat4.translate(headMatrix, headMatrix, [0.0, 1.8 + headBob, 0.0]);
+      mat4.scale(headMatrix, headMatrix, [0.5, 0.5, 0.5]);
+      gl.uniformMatrix4fv(u_ModelMatrix, false, headMatrix);
+      gl.uniform4fv(u_FragColor, [1.0, 0.5, 0.0, 1.0]);
+      gl.drawElements(gl.TRIANGLES, cubeBuffers.count, gl.UNSIGNED_BYTE, 0);
+
+      // Upper Leg
+      let legs = [
+        [-0.6, -1.2, 0.3], [0.6, -1.2, 0.3], [-0.6, -1.2, -0.3], [0.6, -1.2, -0.3]
+      ];
+      for (let i = 0; i < legs.length; i++) {
+        let legMatrix = mat4.create();
+        mat4.translate(legMatrix, legMatrix, legs[i]);
+        mat4.scale(legMatrix, legMatrix, [0.2, 0.8, 0.2]);
+        gl.uniformMatrix4fv(u_ModelMatrix, false, legMatrix);
+        gl.uniform4fv(u_FragColor, [0.3, 0.3, 0.3, 1.0]);
+        gl.drawElements(gl.TRIANGLES, cubeBuffers.count, gl.UNSIGNED_BYTE, 0);
+      }
+
+      // Lower Leg
+      let lowerMatrix = mat4.create();
+      mat4.translate(lowerMatrix, lowerMatrix, [-0.6, -2.0, 0.3]);
+      mat4.rotateZ(lowerMatrix, lowerMatrix, gLimbAngle * Math.PI / 180);
+      mat4.translate(lowerMatrix, lowerMatrix, [0.0, -0.5, 0.0]);
+      mat4.scale(lowerMatrix, lowerMatrix, [0.2, 0.8, 0.2]);
+      gl.uniformMatrix4fv(u_ModelMatrix, false, lowerMatrix);
+      gl.uniform4fv(u_FragColor, [0.6, 0.2, 0.7, 1.0]);
+      gl.drawElements(gl.TRIANGLES, cubeBuffers.count, gl.UNSIGNED_BYTE, 0);
+
+      // Foot (rotate separately)
+      let footMatrix = mat4.clone(lowerMatrix);
+      mat4.translate(footMatrix, footMatrix, [0.0, -1.0, 0.0]);
+      mat4.rotateZ(footMatrix, footMatrix, gFootAngle * Math.PI / 180);
+      mat4.scale(footMatrix, footMatrix, [1.0, 0.5, 1.0]);
+      gl.uniformMatrix4fv(u_ModelMatrix, false, footMatrix);
+      gl.uniform4fv(u_FragColor, [0.8, 0.3, 0.3, 1.0]);
+      gl.drawElements(gl.TRIANGLES, cubeBuffers.count, gl.UNSIGNED_BYTE, 0);
+    }
+
+    function kick() {
+      gLimbAngle = 60;
+      gFootAngle = 30;
+      setTimeout(() => {
+        gLimbAngle = 0;
+        gFootAngle = 0;
+      }, 500);
+    }
+
+    function tick() {
+      let now = Date.now();
+      let fps = Math.round(1000 / (now - g_last));
+      document.getElementById('fps').innerText = 'FPS: ' + fps;
+      g_last = now;
+
+      if (isAnimating) {
+        gLimbAngle = (gLimbAngle + 1) % 360;
+        gFootAngle = (gFootAngle + 2) % 360;
+      }
+      renderScene();
+      requestAnimationFrame(tick);
+    }
+
+    tick();
+  </script>
+</body>
+</html>

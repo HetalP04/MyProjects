@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WebGL Paint App</title>
+</head>
+<body>
+  <canvas id="webgl" width="400" height="400" style="border: 1px solid black;"></canvas>
+
+  <div>
+    <button onclick="clearCanvas()">Clear Canvas</button>
+    <button onclick="g_selectedShape = 'square'">Square</button>
+    <button onclick="g_selectedShape = 'triangle'">Triangle</button>
+    <button onclick="g_selectedShape = 'circle'">Circle</button>
+    <button onclick="drawTriangleArt()">Show Triangle Art</button>
+    <button onclick="g_selectedShape = 'star'">⭐ Star</button>
+
+    <p>Red: <input type="range" min="0" max="1" step="0.01" value="1" onchange="g_color[0] = parseFloat(this.value)"></p>
+    <p>Green: <input type="range" min="0" max="1" step="0.01" value="0" onchange="g_color[1] = parseFloat(this.value)"></p>
+    <p>Blue: <input type="range" min="0" max="1" step="0.01" value="0" onchange="g_color[2] = parseFloat(this.value)"></p>
+
+    <p>Shape Size: <input type="range" min="5" max="50" step="1" value="10" onchange="g_size = parseFloat(this.value)"></p>
+    <p>Circle Segments: <input type="range" min="3" max="30" step="1" value="10" onchange="g_segments = parseInt(this.value)"></p>
+  </div>
+
+  <!-- ⭐ Awesome feature note -->
+  <p><strong>Awesome Feature:</strong> Added a custom ⭐ Star shape that draws a 5-pointed star at each click, fully adjustable in color and size.</p>
+
+  <h2>My Triangle Art Sketch</h2>
+  <img src="MyTriangleDrawing.jpg" alt="My triangle sketch" width="500">
+
+
+  <script src="main.js"></script>
+</body>
+</html>

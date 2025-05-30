@@ -17,19 +17,17 @@ Technologies: HTML, Bulma CSS, JavaScript
 
 This assignment recreates a simplified 1040EZ tax form using Bulma CSS and dynamic JavaScript behavior. Features include:
 
-A responsive table layout with 14 rows and 3 columns.
+  - A responsive table layout with 14 rows and 3 columns. 
 
-The first column describes the category (Income, Payments/Credits, etc.).
+  - The first column describes the category (Income, Payments/Credits, etc.). The second column shows line numbers and descriptions.
 
-The second column shows line numbers and descriptions.
+  - The third column includes input fields for values.
 
-The third column includes input fields for values.
+  - Rows 4, 5, 6, 9, 10, 13, and 14 are computed automatically based on input.
 
-Rows 4, 5, 6, 9, 10, 13, and 14 are computed automatically based on input.
+  - A checkbox updates values conditionally for joint filing.
 
-A checkbox updates values conditionally for joint filing.
-
-Tax calculations use 2023 IRS tax brackets provided via a rates array.
+  - Tax calculations use 2023 IRS tax brackets provided via a rates array.
 
 
 

@@ -4,9 +4,20 @@ Technologies: HTML, Bulma CSS
 
 This project demonstrates a fully structured HTML page using the Bulma CSS framework. The layout includes:
 
-A head and body structure. A header, two section elements (top and bottom), and a footer. The top section contains a full-width cat image. The bottom section contains 6 columns with Bulma cards. Each card includes a header (title) and content (text + Bulma-styled button), each using a different Bulma button style: primary, link, info, success, warning, danger.
+  - A head and body structure.
+    
+  - A header, two section elements (top and bottom), and a footer.
+    
+  - The top section contains a full-width cat image.
+    
+  - The bottom section contains 6 columns with Bulma cards.
 
-The footer includes: A link to the class code repository, A mailto link with the student's name as anchor text.
+  - Each card includes a header (title) and content (text + Bulma-styled button), each using a different Bulma button style: primary, link, info, success, warning, danger.
+
+The footer includes: 
+  - A link to the class code repository.
+
+  - A mailto link with the student's name as anchor text.
 
 
 
@@ -31,28 +42,28 @@ This assignment recreates a simplified 1040EZ tax form using Bulma CSS and dynam
 
 
 
-
-
+_______________________________________________________________________________________________________________
 Assignment 3: Tic-Tac-Toe Game with AI
 Location: assignment3/index.html, assignment3/tictactoe.js
 Technologies: HTML, CSS, Vue.js, JavaScript
 
 This project is an interactive Tic-Tac-Toe game where the user plays against an AI that never loses. Features include:
+    
+  - A 3x3 grid rendered using buttons (cell-i-j class).
 
-A 3x3 grid rendered using buttons (cell-i-j class).
+  - Game state stored in a board array.
 
-Game state stored in a board array.
+  - Vue.js manages reactivity and state rendering.
 
-Vue.js manages reactivity and state rendering.
+  - Clicking a cell makes a move for the player, followed by an automatic computer move.
 
-Clicking a cell makes a move for the player, followed by an automatic computer move.
+  - The game prevents invalid or repeated moves.
 
-The game prevents invalid or repeated moves.
-
-A "Reset" button clears the game and restarts it.
+  - A "Reset" button clears the game and restarts it.
 
 
 
+_______________________________________________________________________________________________________________
 CSE 160 - Assignment 1:
 
 WebGL Triangle Art Drawing Tool
@@ -61,30 +72,31 @@ Technologies: HTML, WebGL, JavaScript
 
 This creative WebGL assignment implements an interactive shape drawing tool with the following features:
 
-A <canvas> element where users can click to draw:
+  - A <canvas> element where users can click to draw:
 
-Triangles, Squares, Circles, and a custom Star shape.
+  - Triangles, Squares, Circles, and a custom Star shape.
 
-Shape color can be customized using RGB sliders.
+  - Shape color can be customized using RGB sliders.
 
-Size and segment count (for circles) are adjustable via input ranges.
+  - Size and segment count (for circles) are adjustable via input ranges.
 
-A "Clear Canvas" button resets the drawing area.
+  - A "Clear Canvas" button resets the drawing area.
 
-A "Show Triangle Art" button reproduces a preset arrangement of triangles inspired by a hand-drawn sketch (MyTriangleDrawing.jpg), which includes:
+  - A "Show Triangle Art" button reproduces a preset arrangement of triangles inspired by a hand-drawn sketch (MyTriangleDrawing.jpg), which includes:
 
-A red triangle top (mountain peak),
+  - A red triangle top (mountain peak),
 
-Symmetrical brown and green shapes forming trees,
+  - Symmetrical brown and green shapes forming trees,
 
-A row of alternating blue and pink triangles,
+  - A row of alternating blue and pink triangles,
 
-Small yellow decorative triangle clusters.
+  - Small yellow decorative triangle clusters.
 
 This assignment demonstrates WebGL rendering logic, shape encapsulation via JavaScript classes, coordinate transformations, and user interaction through mouse events and UI inputs.
 
 
 
+_______________________________________________________________________________________________________________
 CSE 160 - Assignment 2:
 
 3D Animal Model with WebGL Animation
@@ -94,27 +106,27 @@ Technologies: HTML, WebGL, JavaScript, glMatrix
 This assignment presents an animated 3D animal composed of WebGL-rendered cubes and cylinders. It incorporates interactive UI sliders and buttons for manipulating the model in real time.
 
 Key Features:
-WebGL Rendering Pipeline: Custom vertex and fragment shaders handle object positioning and coloring.
+  - WebGL Rendering Pipeline: Custom vertex and fragment shaders handle object positioning and coloring.
 
-Articulated Limbs and Foot Movement: Uses matrix transformations for animating the lower leg and foot independently.
+  - Articulated Limbs and Foot Movement: Uses matrix transformations for animating the lower leg and foot independently.
 
 Controls:
 
-Global Rotation: Spins the entire animal.
+  - Global Rotation: Spins the entire animal.
 
-Limb Angle: Bends the lower leg.
+  - Limb Angle: Bends the lower leg.
 
-Foot Angle: Rotates the foot.
+  - Foot Angle: Rotates the foot.
 
-Toggle Animation: Starts/stops continuous movement.
+  - Toggle Animation: Starts/stops continuous movement.
 
-Shift+Click triggers a kick animation.
+  - Shift+Click triggers a kick animation.
 
-Hierarchical Transformations: The head bobs up and down, and limbs are placed with full hierarchical modeling.
+  - Hierarchical Transformations: The head bobs up and down, and limbs are placed with full hierarchical modeling.
 
-Real-time FPS Display: Provides performance feedback to the user.
+  - Real-time FPS Display: Provides performance feedback to the user.
 
-glMatrix Library: Used for efficient 4x4 matrix operations and 3D camera setup (perspective and view matrices).
+  - glMatrix Library: Used for efficient 4x4 matrix operations and 3D camera setup (perspective and view matrices).
 
 This assignment demonstrates a deeper understanding of real-time rendering, animation loops, 3D geometry construction, and interactive graphics programming.
 

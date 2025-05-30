@@ -4,21 +4,9 @@ Technologies: HTML, Bulma CSS
 
 This project demonstrates a fully structured HTML page using the Bulma CSS framework. The layout includes:
 
-A <head> and <body> structure.
+A <head> and <body> structure. A <header>, two <section> elements (top and bottom), and a <footer>. The top section contains a full-width cat image. The bottom section contains 6 columns with Bulma cards. Each card includes a header (title) and content (text + Bulma-styled button), each using a different Bulma button style: primary, link, info, success, warning, danger.
 
-A <header>, two <section> elements (top and bottom), and a <footer>.
-
-The top section contains a full-width cat image.
-
-The bottom section contains 6 columns with Bulma cards.
-
-Each card includes a header (title) and content (text + Bulma-styled button), each using a different Bulma button style: primary, link, info, success, warning, danger.
-
-The footer includes:
-
-A link to the class code repository.
-
-A mailto link with the student's name as anchor text.
+The footer includes: A link to the class code repository, A mailto link with the student's name as anchor text.
 
 
 

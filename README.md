@@ -10,6 +10,7 @@ The footer includes: A link to the class code repository, A mailto link with the
 
 
 
+_______________________________________________________________________________________________________________
 Assignment 2: Tax Form Simulation
 Location: assignment2/index.html
 Technologies: HTML, Bulma CSS, JavaScript
